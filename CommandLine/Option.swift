@@ -67,8 +67,9 @@ public class BoolOption: Option {
     return true
   }
   
-  public init(shortFlag: String, longFlag: String, helpMessage: String) {
+  public init(shortFlag: String, longFlag: String, helpMessage: String, defaultValue: Bool = false) {
     super.init(shortFlag: shortFlag, longFlag: longFlag, required: false, helpMessage: helpMessage)
+    self._value = defaultValue
   }
   
   override func match(values: [String]) -> Bool {
@@ -79,26 +80,36 @@ public class BoolOption: Option {
 
 /**  An option that accepts a positive or negative integer value. */
 public class IntOption: Option {
-  private var _value: Int?
+  private var _value: Int
   
-  public var value: Int? {
+  public var value: Int {
     return _value
   }
-  
+
+  private var _didSet: Bool
   override var isSet: Bool {
-    return _value != nil
+    return _didSet
+  }
+
+  public init(shortFlag: String, longFlag: String, required: Bool, helpMessage: String, defaultValue: Int = 0) {
+    self._value = defaultValue
+    self._didSet = false
+    super.init(shortFlag: shortFlag, longFlag: longFlag, required: required, helpMessage: helpMessage)
   }
   
   override func match(values: [String]) -> Bool {
     if values.count == 0 {
+      _didSet = false
       return false
     }
     
     if let val = values[0].toInt() {
       _value = val
+      _didSet = true
       return true
     }
-    
+
+    _didSet = false
     return false
   }
 }
@@ -131,70 +142,98 @@ public class CounterOption: Option {
 
 /**  An option that accepts a positive or negative floating-point value. */
 public class DoubleOption: Option {
-  private var _value: Double?
+  private var _value: Double
   
-  public var value: Double? {
+  public var value: Double {
     return _value
   }
-  
+
+  private var _didSet: Bool
   override var isSet: Bool {
-    return _value != nil
+    return _didSet
+  }
+
+  public init(shortFlag: String, longFlag: String, required: Bool, helpMessage: String, defaultValue: Double = 0.0) {
+    _value = defaultValue
+    _didSet = false
+    super.init(shortFlag: shortFlag, longFlag: longFlag, required: required, helpMessage: helpMessage)
   }
   
   override func match(values: [String]) -> Bool {
     if values.count == 0 {
+      _didSet = false
       return false
     }
     
     if let val = values[0].toDouble() {
       _value = val
+      _didSet = true
       return true
     }
-    
+
+    _didSet = false
     return false
   }
 }
 
 /**  An option that accepts a string value. */
 public class StringOption: Option {
-  private var _value: String? = nil
+  private var _value: String
   
-  public var value: String? {
+  public var value: String {
     return _value
   }
-  
+
+  private var _didSet: Bool
   override var isSet: Bool {
-    return _value != nil
+    return _didSet
+  }
+
+  public init(shortFlag: String, longFlag: String, required: Bool, helpMessage: String, defaultValue:String = "") {
+    _value = defaultValue
+    _didSet = false
+    super.init(shortFlag: shortFlag, longFlag: longFlag, required: required, helpMessage: helpMessage)
   }
   
   override func match(values: [String]) -> Bool {
     if values.count == 0 {
+      _didSet = false
       return false
     }
     
     _value = values[0]
+    _didSet = true
     return true
   }
 }
 
 /**  An option that accepts one or more string values. */
 public class MultiStringOption: Option {
-  private var _value: [String]?
-  
-  public var value: [String]? {
+  private var _value: [String]
+
+  public var value: [String] {
     return _value
   }
-  
+
+  private var _didSet: Bool
   override var isSet: Bool {
-    return _value != nil
+    return _didSet
   }
-  
+
+  public init(shortFlag: String, longFlag: String, required: Bool, helpMessage: String, defaultValue: [String] = []) {
+    _value = defaultValue
+    _didSet = false
+    super.init(shortFlag: shortFlag, longFlag: longFlag, required: required, helpMessage: helpMessage)
+  }
+
   override func match(values: [String]) -> Bool {
     if values.count == 0 {
+      _didSet = false
       return false
     }
     
     _value = values
+    _didSet = true
     return true
   }
 }
